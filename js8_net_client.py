@@ -425,8 +425,8 @@ class JS8_Net(object):
         """ need to figure out if this was the last known talking station by the offset value"""
         try:
           intOffset = int(self.js8client.getParam(dict_obj, "OFFSET"))
+
           talkingIndex = self.getTalkingStationIndex()
-          #FIXME
           if(talkingIndex != -1):
             self.debug.info_message("whoIsThis. talking index: " + str(talkingIndex) )
             lastTalkingOffset = int(self.getStationOffset(talkingIndex))
@@ -440,7 +440,12 @@ class JS8_Net(object):
               if(intOffset > lastTalkingOffset-10 and intOffset < lastTalkingOffset+10):
                 last_call = self.getStationCallAlt(matchedIndex)
           else:
-            last_call = "-"			        
+            matchedIndex = self.getOffsetMatch(intOffset, 10)
+            lastTalkingOffset = int(self.getStationOffset(matchedIndex))
+            if(intOffset > lastTalkingOffset-10 and intOffset < lastTalkingOffset+10):
+              last_call = self.getStationCallAlt(matchedIndex)
+            else:
+              last_call = "-"			        
           
         except:
           self.debug.error_message("method: whoIsThis. " + str(sys.exc_info()[0]) + str(sys.exc_info()[1] ))
@@ -484,7 +489,6 @@ class JS8_Net(object):
       if(found == 0 and self.getAutoCheckin() == True):
         self.processAutoCheckin(text, last_call, last_offset, last_SNR, last_BadFrm, last_TimeDelta)
 
-    #FIXME
     """ only stop the timer if the call matches what was set to start timer """
     self.stopTimer(last_call, False, True)
     self.view.refreshRoster(self.getRoster())
@@ -501,10 +505,11 @@ class JS8_Net(object):
     last_status = " <HEARD> "
           
     last_name = self.nameFromSavedCalls(last_call)
-    if(last_name!=""):
+    if(last_name!="" and last_name != '-'):
       self.setRoster( self.getRoster() + [last_call + ' ' + last_name + last_status + last_offset + ' ' + last_SNR + ' ' + last_BadFrm + ' ' + last_TimeDelta] )
     else:
-      self.setRoster( self.getRoster() + [last_call + ' -' + last_status + last_offset + ' ' + last_SNR + ' ' + last_BadFrm + ' ' + last_TimeDelta] )
+      if(last_call != '' and last_call != '-'):
+        self.setRoster( self.getRoster() + [last_call + ' -' + last_status + last_offset + ' ' + last_SNR + ' ' + last_BadFrm + ' ' + last_TimeDelta] )
 
   """
   callback function used by JS8_Client processing thread
@@ -545,14 +550,6 @@ class JS8_Net(object):
       elif (type == "RX.DIRECTED"):
         self.debug.info_message("my_new_callback. RX.DIRECTED")
         last_call = self.processMsg(dict_obj, text)
-        """
-        if self.js8client.isEndOfMessage(text):
-          self.view.writeMsgToScreen(dict_obj, "\nDIRECTED: " + text + "EOM", self.js8client)   # yes works
-        elif self.js8client.areFramesMissing(text)>0:
-          self.view.writeMsgToScreen(dict_obj, "\nDIRECTED: " + text + "MISSING FRAMES :" + str(self.js8client.areFramesMissing(text)), self.js8client)
-        else:
-          self.view.writeMsgToScreen(dict_obj, "\nDIRECTED: " + text, self.js8client)
-        """
         try:  
           self.parser.decodeTriggers(dict_obj, text, last_call, txrcv)
         except:
@@ -613,7 +610,6 @@ class JS8_Net(object):
     if (send_btu and handoff):
       post_text = self.processBtuOverTo()
 
-    #FIXME
     checked = self.window['cb_simulate'].get()
     if(checked == False):
       if(send_type == "Post to JS8Call only"):
@@ -906,8 +902,6 @@ class JS8_Net(object):
     return()
 
 def usage():
-  sys.stdout.write("your visual pleasure.\n")
-  sys.stdout.write("To stop the proxy, press CTRL+C\n")
   sys.exit(2)
 
 def main():
