@@ -11,14 +11,29 @@ The design concept is both experimental and unique.
 
 This application is for use in conjunction with JS8Call
 
-to utilize these features, at the very least net control should use js8 net appliation.
-it is possible for participant stations to participate without using js8 net application
-however those stations will not have any of the js8 net application enhanced functionality 
-available to them
+To utilize these features, at the very least net control should use js8 net application.
+It is possible for participant stations to participate without using js8 net application
+however, those stations will not have any of the js8 net application enhanced functionality 
+available to them.
 
-all stations on the net that use js8 net application will have the benfeit of the enhanced functionality.
+All stations on the net that use js8 net application will have the enhanced functionality.
 This functionality is similar to what might be provided by an internet based application, however this 
 is achieved by using JS8 HF text mode communication only and without the use of any internet connections. 
+
+A quick overview of some of the main features of JS8Net are:
+
+    • Roster to display participating station call signs, operator name, net status and offset
+    • Point and click style of net operation
+    • Can be run as net control view or as participant station view
+    • Convenient notepad area to pre-type various communications prior to the net
+    • Auto save feature 
+    • Built in macro language allowing construction of wide variety of point and click messages with macros that are hooked into the various tracking aspects of JS8Net
+    • customization feature allowing customization of all point and click message
+    • state machine and text mode parser that allows participant stations to view up to date net information as if connected via internet
+    • no internet connection required. Uses only text mode communication allowing stations
+    • Use of application is optional. Any station using at a minimum JS8 mode only are still able to participate in the net.
+    • tracking of SNR, bad frames and time delta for each station. 
+    • Ability to distribute an offsets list to other stations running JS8Net
 
 
 Quick start guide
@@ -57,7 +72,7 @@ set js8_net_client.py as executeable
 sudo chmod +x js8_net_client.py
 
 
-step 4 run the application
+STEP 4 run the application
 ==========================
 
 There are two main modes of operation, one as net control...
@@ -83,7 +98,7 @@ if you wish to use a different ip or port these can be specified on the command 
 python ./js8_net_client.py --interface=netcontrol --js8call='127.0.0.1:2442'
 
 
-step 5 customization
+STEP 5 customization
 ====================
 
 1) offsets plan
@@ -106,7 +121,6 @@ python ./js8_net_client.py --interface=netcontrol --edit
 4) screen colors
 colors can be changed as follows...
 python ./js8_net_client.py --interface=netcontrol --visual='background:yellow,main:pink,side:blue,flash1:green,flash2:cyan'
-
 the default colors are set equivalent to...
 python ./js8_net_client.py --interface=netcontrol --visual='background:LightGray,main:SeaGreen1,side:LightBlue1,flash1:red,flash2:blue'
 
