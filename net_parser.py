@@ -1,5 +1,10 @@
 #!/usr/bin/env python
-import PySimpleGUI27 as sg
+
+try:
+  import PySimpleGUI as sg
+except:
+  import PySimpleGUI27 as sg
+
 import sys
 import JS8_Client
 import debug as db
@@ -15,6 +20,31 @@ import net_parser
 
 from datetime import datetime, timedelta
 from datetime import time
+
+"""
+MIT License
+
+Copyright (c) 2022 Lawrence Byng
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 
 
 """
@@ -44,7 +74,8 @@ class NetParser(object):
   please note <NAME> is optional.
   """
   def decodeRosterTrigger(self, dict_obj, text, last_call, mode):
-    if( self.js8client.isTextInMessage(self.window['input_netgroup'].get() +" THE ROSTER IS: ", text) ):
+  
+    if( self.js8client.isTextInMessage(self.window['input_netgroup'].get().upper() +"  OK THE ROSTER IS: ", text) ):
       self.debug.info_message("decodeTriggers. 'THE ROSTER IS:'")
 
       """ setting the round is done here as well as in starting the round. Multiple calls to incRound at start is not a problem"""
@@ -108,11 +139,17 @@ class NetParser(object):
              stn_offset=offset_split_string[1]
              offset_count=2
 
+      self.debug.info_message("decode roster 6")
+
       if(numcalls>0):
         self.view.updateCallNameStatus(None, calls_list[0].split(' ')[0], calls_list[0].split(' ')[1], calls_list[0].split(' ')[2])
 
+      self.debug.info_message("decode roster 7")
+
       self.js8net.roster = calls_list
       self.view.refreshRoster(calls_list)
+
+      self.debug.info_message("completed decode roster")
 
   """      
   process net announcement QST
@@ -121,7 +158,7 @@ class NetParser(object):
   example: WH6NCS: @HINET QST QST THE HAWAII JS8 NET STARTS AT 04:30 ZULU ON 7.095MHZ. PLS USE @HINET GRP
   """
   def decodeQstTrigger(self, dict_obj, text, last_call, mode):
-    if( self.js8client.isTextInMessage("@ALLCALL QST QST ", text) ):
+    if( self.js8client.isTextInMessage("@ALLCALL  QST QST ", text) ):
       self.debug.info_message("decodeTriggers. '@ALLCALL QST QST'")
 
       if( (" NET STARTS AT ") in text):
@@ -160,10 +197,10 @@ class NetParser(object):
   example: WELCOME TO THE TUESDAY EDITION OF THE HAWAII JS8 NET. GE THIS IS LB UR HOST. THIS IS A ROUND TABLE NET GOING 3 ROUNDS'
   """
   def decodeOpenNetTrigger(self, dict_obj, text, last_call, mode):
-    if( self.js8client.isTextInMessage("WELCOME TO THE ", text) ):
+    if( self.js8client.isTextInMessage("AND TIME FOR THE ", text) ):
       self.debug.info_message("decodeTriggers. OPEN THE NET")
 
-      if( (" WELCOME TO THE ") in text):
+      if( (" AND TIME FOR THE ") in text):
         self.window['cb_savedetails'].Update(value=True)
 
         self.view.refreshRoster([])
@@ -175,7 +212,7 @@ class NetParser(object):
 
         split1 = text.split(' EDITION', 1)
         pre_text = split1[0].strip()
-        edition = pre_text.split('WELCOME TO THE ', 1)[1].strip()
+        edition = pre_text.split('AND TIME FOR THE ', 1)[1].strip()
         self.window['option_profile'].Update(value=edition)
         self.debug.info_message("decodeTriggers. OPEN edition: " + edition)
 
@@ -705,7 +742,7 @@ class NetParser(object):
       message = self.parseIt3(message, '%NETFRE', self.window['input_netfre'].get().strip())
       message = self.parseIt3(message, '%NUMROUNDS', self.window['input_rounds'].get().strip())
       message = self.parseIt3(message, '%CURRENTROUND', self.window['option_currentround'].get().strip())
-      message = self.parseIt3(message, '%GROUPNAME', self.window['input_netgroup'].get().strip())
+      message = self.parseIt3(message, '%GROUPNAME', self.window['input_netgroup'].get().upper().strip())
       message = self.parseIt3(message, '%OFFSETSPLAN', self.js8net.getOffsetsList() )
       
       message = self.parseIt2(message, self.window['prev_stn'].get().strip(), '%LBADFRAMES', 5)

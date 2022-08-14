@@ -1,5 +1,10 @@
 #!/usr/bin/env python
-import PySimpleGUI27 as sg
+
+try:
+  import PySimpleGUI as sg
+except:
+  import PySimpleGUI27 as sg
+
 import sys
 import JS8_Client
 import threading
@@ -8,6 +13,31 @@ import constant as cn
 
 from datetime import datetime, timedelta
 from datetime import time
+
+"""
+MIT License
+
+Copyright (c) 2022 Lawrence Byng
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 
 """
 This class handles the events from the varius control defined in js8_net_gui
@@ -38,13 +68,14 @@ class ControlsProc(object):
       time_a = datetime(time_b.year, time_b.month, time_b.day, starthour, startmin, 0, 0) # net start in UTC
     except:
       """set as a default if time field not set correctly"""		
-      time_a = datetime(time_b.year, time_b.month, time_b.day, 04, 30, 0, 0) # net start in UTC
+      time_a = datetime(time_b.year, time_b.month, time_b.day, 4, 30, 0, 0) # net start in UTC
 
     delta = time_a - time_b
     tdSaved = tdSeconds = delta.seconds
     tdMinutes, tdSeconds = divmod(abs(tdSeconds), 60)
     tdHours, tdMinutes = divmod(tdMinutes, 60)
 
+    """
     if(tdHours==0 and tdSeconds == 0):
       if(tdMinutes == 30):
         self.view.startFlashButtons(['button_qst'])
@@ -53,7 +84,8 @@ class ControlsProc(object):
       elif(tdMinutes == 2):
         self.view.stopFlashingButtons(['button_qst'])
         self.view.startFlashButtons(['button_open'])
-
+    """
+    
     if (tdSaved>=0 and tdHours<2):
       return "T-{hours:02d}:{minutes:02d}:{seconds:02d}".format(
                  hours=tdHours,

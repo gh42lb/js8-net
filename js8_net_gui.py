@@ -1,5 +1,26 @@
 #!/usr/bin/env python
-import PySimpleGUI27 as sg
+
+""" the following is necessary due to difference between version 2 and 3 """
+try:
+  import PySimpleGUI as sg
+  global_slider_width=78
+  global_table_width=90
+
+  global_col_1 = 14
+  global_col_2 = 13
+  global_col_3 = 10
+  global_col_4 = 9
+  global_col_5 = 8
+except:
+  import PySimpleGUI27 as sg
+  global_slider_width=64
+  global_table_width=65
+  global_col_1 = 12
+  global_col_2 = 9
+  global_col_3 = 8
+  global_col_4 = 8
+  global_col_5 = 7
+
 import sys
 import JS8_Client
 import threading
@@ -10,6 +31,31 @@ import constant as cn
 
 from datetime import datetime, timedelta
 from datetime import time
+
+"""
+MIT License
+
+Copyright (c) 2022 Lawrence Byng
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 
 
 class MainWindow(object):
@@ -29,15 +75,34 @@ class MainWindow(object):
                                    '%GROUPNAME IT IS %LOCALTIME IN THE HAWAIIAN ISLANDS AND TIME FOR THE %PROF EDITION OF THE %NETNAME NET. '\
                                     'GE THIS IS %NCSNAME UR HOST. THIS IS A %NETTYPE NET GOING %NUMROUNDS ROUNDS. PLS '\
                                    'USE %GROUPNAME GRP FOR ALL MSGS TO THE NET.'\
+                	               '%SEQ '\
+                                   '%GROUPNAME IT IS %LOCALTIME IN THE HAWAIIAN ISLANDS AND TIME FOR THE %PROF %NETNAME NET. '\
+                                    'GE THIS IS %NCSNAME UR HOST. THIS IS A %NETTYPE NET GOING ONE ROUND EACH SPREAD OVER %NUMROUNDS BANDS FOR A TOTAL OF %NUMROUNDS ROUNDS. PLS '\
+                                   'USE %GROUPNAME GRP FOR ALL MSGS TO THE NET.'\
                 	               '%ENDSEQ ',\
-                          'CKin'  : '%GROUPNAME %IFNNETSTARTED %SEQ ANY PRE-CHECKS? %SEQ ANY MORE PRE-CHECKS? %ENDSEQ %ENDIFNNETSTARTED '\
-                                    '%IFNETSTARTED %SEQ ARE THERE ANY CHECK-INS? %SEQ ANY MORE CHECK-INS FOR THE NET CALL NOW? %SEQ LAST CALL FOR CHECK-INS %ENDSEQ %ENDIFNETSTARTED',\
+                          'CKin'  : '%GROUPNAME %IFNNETSTARTED '\
+                                                  '%SEQ ARE THERE ANY PRE-CHECKS? '\
+                                                  '%SEQ ANY MORE PRE-CHECKS? '\
+                                                  '%ENDSEQ %ENDIFNNETSTARTED '\
+                                               '%IFNETSTARTED '\
+                                                  '%SEQ ARE THERE ANY CHECK-INS? '\
+                                                  '%SEQ ARE THERE ANY MORE CHECK-INS? '\
+                                                  '%SEQ ANY MORE CHECK-INS FOR THE NET PLS CALL NOW '\
+                                                  '%SEQ ANY DX STATION CHECK-INS? '\
+                                                  '%SEQ LAST CALL FOR CHECK-INS '\
+                                                  '%ENDSEQ %ENDIFNETSTARTED',\
                           'Gotu'  : '%GROUPNAME'\
-                                    '%SEQ %IFCHECKIN OK I HAVE ADDED %CHECKINCALL TO THE ROSTER. GE TKS FOR CHECKING IN. %ENDIFCHECKIN'\
-                                    '%SEQ %IFCHECKIN OK I HEARD %CHECKINCALL. GE TKS FOR CHECKING IN.%ENDIFCHECKIN '\
-                                    '%ENDSEQ'\
-                                    '%IFNNETSTARTED ARE THERE ANY MORE PRE-CHKS? %ENDIFNNETSTARTED '\
-                                    '%IFNETSTARTED ARE THERE ANY MORE CHECK-INS? %ENDIFNETSTARTED ',\
+                                           '%SEQ %IFCHECKIN OK I HAVE ADDED %CHECKINCALL TO THE ROSTER. GE TKS FOR CHECKING IN. '\
+                                                 '%IFNNETSTARTED ARE THERE ANY MORE PRE-CHECKS? %ENDIFNNETSTARTED '\
+                                                 '%IFNETSTARTED ARE THERE ANY MORE CHECK-INS? %ENDIFNETSTARTED '\
+                                                 '%ENDIFCHECKIN'\
+                                           '%SEQ %IFCHECKIN OK I HEARD %CHECKINCALL. GE TKS FOR CHECKING IN.'\
+                                                 '%IFNNETSTARTED ARE THERE ANY MORE PRE-CHECKS? %ENDIFNNETSTARTED '\
+                                                 '%IFNETSTARTED ARE THERE ANY MORE CHECK-INS? %ENDIFNETSTARTED '\
+                                                 '%ENDIFCHECKIN '\
+                                           '%SEQ %IFCHECKIN OK I HEARD %CHECKINCALL. GE. PLS GIVE US YOUR NAME AND REPORT. %ENDIFCHECKIN '\
+                                           '%SEQ %IFCHECKIN OK I HEARD %CHECKINCALL. GE. PLS GIVE US YOUR NAME AND TAKE A TURN. %ENDIFCHECKIN '\
+                                           '%ENDSEQ',\
                           'Roster': '%GROUPNAME %SEQ OK THE ROSTER IS: %ROSTER '\
                                                '%SEQ OK SO FAR THE ROSTER IS: %ROSTER '\
                                                '%SEQ OK THE UPDATED ROSTER IS: %ROSTER  %ENDSEQ',\
@@ -114,7 +179,12 @@ class MainWindow(object):
                           'Skip'  : '%GROUPNAME OK well come back to %LN. %IFNEXT Next over to %NN. GE %NN UR REPORT PLS %ENDIFNEXT',\
                           'Prompt': '%GROUPNAME %SEQ HI %NN ur turn %SEQ %NN ur turn %SEQ %NN? %SEQ %NN take a turn pls %ENDSEQ',\
                           'Over To': '%GROUPNAME %SEQ OK lets try %NC again. GE %NN take a turn pls %SEQ OK Now over to %NC. go ahead %NN %SEQ over to %NN %ENDSEQ',\
-                          'Cmnt'  : '%GROUPNAME %SEQ ARE THERE ANY QUESTIONS OR COMMENTS? %SEQ ANY MORE QUESTIONS OR COMMENTS BEFORE I CLOSE? %SEQ LAST CALL FOR QUESTIONS OR COMMENTS BEFORE I CLOSE %ENDSEQ',\
+                          'Cmnt'  : '%GROUPNAME '\
+                                            '%SEQ ARE THERE ANY QUESTIONS OR COMMENTS? '\
+                                            '%SEQ ANY MORE QUESTIONS OR COMMENTS BEFORE I CLOSE? '\
+                                            '%SEQ ANY QUESTIONS OR COMMENTS BEFORE WE QSY? '\
+                                            '%SEQ ANY MORE QUESTIONS OR COMMENTS BEFORE WE QSY? '\
+                                            '%SEQ LAST CALL FOR QUESTIONS OR COMMENTS BEFORE I CLOSE %ENDSEQ',\
                           'Close' : '%GROUPNAME THIS CONCLUDES TODAYS NET. TKS ALL FOR SUPPORTING JS8 IN HAWAII. THE NET IS NOW CLOSED AT %LOCALTIME HST AND THIS FRE RETURNED TO RGLR AMTR RADIO USE. 73 TO ALL AND ALOHA DE %NCSCALL',\
                           'NCS_Cust1' : '%GROUPNAME OK ITS AWARD TIME! '\
                                             '%SEQ OK THE AWARD FOR PERFECT COPY WEAKEST SIGNAL STN GOES TO %WEAKSIGNALAWARD. AWESOME! HAVE THREE GOLD STARS! '\
@@ -125,6 +195,14 @@ class MainWindow(object):
                                             '%ENDSEQ.',\
                           'NCS_Cust2' : '%SEQ'\
                                         '%GROUPNAME OK THE NEW OFFSETS PLAN IS: %OFFSETSPLAN '\
+                                        '%SEQ'\
+                                        '%GROUPNAME OK LETS HOP TO 30M BAND. QSY TO 10.120'\
+                                        '%SEQ'\
+                                        '%GROUPNAME OK LETS HOP TO $0M BAND. QSY TO 7.095'\
+                                        '%SEQ'\
+                                        '%GROUPNAME OK LETS HOP TO 80M BAND. QSY TO 3.560'\
+                                        '%SEQ'\
+                                        '%GROUPNAME OK LETS HOP TO 160M BAND. QSY TO 1.859'\
                                         '%SEQ'\
                                         '%GROUPNAME QSY TO 7.078 '\
                                         '%ENDSEQ ',\
@@ -216,7 +294,7 @@ class MainWindow(object):
     self.delayed_send = 0
     self.delay_value = 25
     self.btn_clr1 = 'white'
-    self.btn_clr2 = 'green'
+    self.btn_clr2 = 'magenta2'
     self.btn_flashclr1 = 'red'
     self.btn_flashclr2 = 'blue'
                             
@@ -259,8 +337,8 @@ class MainWindow(object):
     return mytime
 
   def stopFlash(self, timeout):
-    self.window['multiRcv'].Update(background_color='SeaGreen1')
-    self.window['multiSide'].Update(background_color='LightBlue1')
+    self.window['multiRcv'].Update(background_color='turquoise1')
+    self.window['multiSide'].Update(background_color='DarkOliveGreen1')
     self.window['slider_timeout'].Update(timeout)
     return()
 
@@ -346,7 +424,7 @@ class MainWindow(object):
     return(call)
     
   def getProfileString(self):
-	return (self.window['option_profile'].get() )
+    return (self.window['option_profile'].get() )
 
   def getSelectedIndex(self, values):
     return (values['roster'][0])
@@ -411,10 +489,13 @@ class MainWindow(object):
           dispatcher.event_catchall(values)
 
         if event in ('Exit', None):
+          sys.stdout.write("Exiting event is:" + str(event) + "\n")
           break
 
       self.window.close()
     except:
+      sys.stdout.write("EXCEPTION IN GUI THREAD\n")
+      sys.stdout.write("exception in method: js8_net_gui.run: " + str(sys.exc_info()[0]) + str(sys.exc_info()[1] ) + "\n")
       self.event_exit(None)
       self.window.close()
 
@@ -426,22 +507,54 @@ class MainWindow(object):
       self.writeDictToFile("js8net_save_data.txt")
       self.js8client.stopThreads()
     except:
-      self.debug.error_message("method: event_exit. " + str(sys.exc_info()[0]) + str(sys.exc_info()[1] ))
+      self.js8net.debug.error_message("method: event_exit. " + str(sys.exc_info()[0]) + str(sys.exc_info()[1] ))
       
     return()
 
   def readDictFromFile(self, filename):
-    with open(filename) as f:
-      data = f.read()
+    try:
+		  
+      with open(filename) as f:
+        data = f.read()
   
-    """  
-    reconstructing the data as a dictionary
-    """
-    js = json.loads(data)
+      """  
+      reconstructing the data as a dictionary
+      """
+      js = json.loads(data)
 
-    """ now add the edited data object """	  
-    self.message_list_buttons_edited = js.get("editdata")
-   
+      """ now add the edited data object """	  
+      self.message_list_buttons_edited = js.get("editdata")
+    except:
+      details = { 'params': {'NetName'    : '',
+                             'Edition'    : '',
+                             'NetGroup'   : '',
+                             'DirectRnd'  : '',
+                             'StartTime'  : '',
+                             'NetFre'     : '',
+                             'NCS'        : '',
+                             'Rounds'     : '',
+                             'AutoCheckin': 1,
+                             'PrevStn'    : '',
+                             'NextStn'    : '',
+                             'SendOption' : '',
+                             'MainOffset' : '',
+                             'SideOffset' : '',
+                             'AutoHandoff': 0,
+                             'FlashBtn'   : 1,
+                             'Announce'   : '',
+                             'Report'     : '',
+                             'Other'      : '' } }
+
+      """ now add the edited data object """	  
+      details['editdata']= {}
+
+      """ now add the roster data object """	  
+      details['roster']= []
+
+      """ now add the call sign lookups data object  """
+      details['callsigns']= []
+      js = details
+		   
     return(js)
 
 
@@ -476,7 +589,7 @@ class MainWindow(object):
     """ individual fields first """	  
     details = { 'params': {'NetName'    : self.window['input_netname'].get() if (ncs_fields or checked) else netname,
                            'Edition'    : self.window['option_profile'].get() if (ncs_fields or checked) else edition,
-                           'NetGroup'   : self.window['input_netgroup'].get() if (ncs_fields or checked) else netgroup,
+                           'NetGroup'   : self.window['input_netgroup'].get().upper() if (ncs_fields or checked) else netgroup,
                            'DirectRnd'  : self.window['option_menu'].get() if (ncs_fields or checked) else nettype,
                            'StartTime'  : self.window['input_starttime'].get() if (ncs_fields or checked) else netstart,
                            'NetFre'     : self.window['input_netfre'].get() if (ncs_fields or checked) else netfre,
@@ -636,12 +749,12 @@ class MainWindow(object):
     if( self.window['input_netgroup'].get().strip() == ""):
       self.window['text_netgrp'].update(text_color='red')
     else:  
-      self.window['text_netgrp'].update(text_color='black')
+      self.window['text_netgrp'].update(text_color='white')
 
     if( self.window['input_netfre'].get().strip() == ""):
       self.window['text_netfre'].update(text_color='red')
     else:  
-      self.window['text_netfre'].update(text_color='black')
+      self.window['text_netfre'].update(text_color='white')
 
   def disableEnableAllButtons(self, disable_state, buttons):
     for x in range(len(buttons)):
@@ -690,8 +803,7 @@ class MainWindow(object):
 
     side_list = []
 
-    for x in range(len(self.message_side_list_client)):
-      key, val = self.message_side_list_client.items()[x]
+    for key in self.message_side_list_client:  
       side_list += [key]
       
     """ get today in english """  
@@ -737,8 +849,8 @@ class MainWindow(object):
     side_offset = js.get("params").get("SideOffset") 
     side_offset = 537
 
-    netgrp_text_color='black'
-    netfre_text_color='black'
+    netgrp_text_color='white'
+    netfre_text_color='white'
     if(netgrp_value == ""):
       netgrp_text_color='red'
 
@@ -746,8 +858,8 @@ class MainWindow(object):
       netfre_text_color='red'
       
     background = 'LightGray'
-    main_color = 'SeaGreen1'
-    side_color = 'LightBlue1'
+    main_color = 'turquoise1'
+    side_color = 'DarkOliveGreen1'
    
     visuals_split = visuals.split(',')
     
@@ -793,28 +905,28 @@ class MainWindow(object):
              sg.Text('NCS:', size=(5, 1), font=("Helvetica", 15), background_color=background), 
              sg.InputText(js.get("params").get("NCS") if (ncs_fields or client_read_details) else "" , key='input_ncs', size=(9, 1), font=("Helvetica", 15)),
              sg.Text('Round:', size=(6, 1), font=("Helvetica", 15), background_color=background),
-             sg.Combo(('ONE', 'TWO', 'THREE'), key='option_currentround', size=(8, 1)), 
+             sg.Combo(('ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'), default_value='ONE', key='option_currentround', size=(8, 1)), 
              sg.Text('of:', size=(2, 1), font=("Helvetica", 15), background_color=background),
-             sg.Combo(('-', 'ONE', 'TWO', 'THREE'), key='input_rounds', size=(8, 1), default_value=js.get("params").get("Rounds") if (ncs_fields or client_read_details) else "-")], 
+             sg.Combo(('-', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'), key='input_rounds', size=(8, 1), default_value=js.get("params").get("Rounds") if (ncs_fields or client_read_details) else "ONE")], 
 
         [sg.Text('_' * 100, background_color=background, visible=ncs_fields)],
 
         [sg.InputText(first_call, key='roster_choose', size=(17, 1), enable_events=True, visible=ncs_fields),
          sg.InputText(first_name, key='rstr_name', size=(16, 1), enable_events=True, visible=ncs_fields),
-         sg.Combo((cn.HEARD, cn.STANDBY, cn.NEXT, cn.TALKING, cn.SKIP, cn.DONE, cn.QRT, cn.SWL, cn.IGNORE, cn.NONE, cn.CHECKIN, cn.NCS), key='rstr_status', size=(13, 1), enable_events=True, visible=ncs_fields),
+         sg.Combo((cn.HEARD, cn.STANDBY, cn.NEXT, cn.TALKING, cn.SKIP, cn.DONE, cn.QRT, cn.SWL, cn.IGNORE, cn.NONE, cn.CHECKIN, cn.NCS), default_value=cn.NONE, key='rstr_status', size=(13, 1), enable_events=True, visible=ncs_fields),
          sg.Button('Update', size=(5, 1), key='add_stn', visible=ncs_fields),
          sg.Button('Delete', size=(5, 1), key='remove_stn', visible=ncs_fields),
          sg.Button('Clear', size=(5, 1), key='clear_all', visible=ncs_fields),
          sg.CBox('Auto Check-In', key='cb_autocheckin', enable_events=True, visible=ncs_fields, default=js.get("params").get("AutoCheckin"), background_color=background )], 
 
         [                   sg.Table(values=roster, headings=['Callsign', 'Name', 'Status', 'Offset', 'SNR', 'Bad Frm', 'Time Dlt'],
-                            max_col_width=65,
-                            col_widths=[12, 12, 9, 8, 8, 7, 7],
+                            max_col_width=global_table_width,
+                            col_widths=[global_col_1, global_col_1, global_col_2, global_col_3, global_col_4, global_col_5, global_col_5],
                             auto_size_columns=False,
                             justification='left',
                             enable_events=True,
                             select_mode=sg.TABLE_SELECT_MODE_EXTENDED,
-                            num_rows=5, key='roster')],
+                            num_rows=5, key='roster', background_color='white', text_color='black')],
 
         [sg.CBox('Prev', key='cb_prevstn', visible=ncs_fields, background_color=background, enable_events=True),
          sg.Text('Prev', size=(8, 1), visible=client_fields, background_color=background), 
@@ -830,7 +942,7 @@ class MainWindow(object):
         [sg.MLine(default_text='', size=(98, 5), key='multiRcv', autoscroll=True, background_color=main_color)],
         [sg.MLine(default_text='', size=(98, 3), key='multiSide', autoscroll=True, background_color=side_color)],
 
-        [sg.Slider(range=(1, counter_value), orientation='h', size=(64, 15), key='slider_timeout', default_value=counter_value, visible=show_counter, background_color=background)],
+        [sg.Slider(range=(1, counter_value), orientation='h', size=(global_slider_width, 15), key='slider_timeout', default_value=counter_value, visible=show_counter, background_color=background)],
          
         [sg.CBox('Offset:', key='cb_presetoffset', default = False , background_color=background, enable_events=True),
          sg.InputText(main_offset, key='main_offset', size=(10, 1), background_color=main_color, disabled=True),
@@ -863,20 +975,20 @@ class MainWindow(object):
          sg.Button('Skip',  key='button_skip', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=ncs_fields, disabled = disable_buttons ), 
          sg.Button('End Rnd',   key='button_end', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=ncs_fields, disabled = disable_buttons ), 
          sg.Button('Awards!', key='button_ncs_cust1', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=ncs_fields, disabled = disable_buttons ), 
-         sg.Button('Comment',  key='button_cmnt', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=ncs_fields, disabled = disable_buttons ), 
+         sg.Button('Cmnt',  key='button_cmnt', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=ncs_fields, disabled = disable_buttons ), 
          sg.Button('Close', key='button_close', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=ncs_fields, disabled = disable_buttons ), 
          sg.Button('Extras', key='button_ncs_cust2', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=ncs_fields, disabled = disable_buttons )], 
 
         [sg.CBox('UR Welcome', key='cb_welcome', enable_events=True, visible=ncs_fields, background_color=background),
          sg.Text('', size=(8, 1), visible=client_fields, background_color=background), 
          sg.CBox('Tks',   key='cb_rep', background_color=background),
-         sg.Combo(combo_list_1, key='option_tks', enable_events=True, visible=ncs_fields),
+         sg.Combo(combo_list_1, default_value=combo_list_1[0], key='option_tks', enable_events=True, visible=ncs_fields),
          sg.CBox('SNR',      key='cb_snr', background_color=background),
          sg.Button('Edit', key='edit_firstcombo', visible=show_edit_buttons),
          sg.CBox('Other', key='cb_other', background_color=background),
          sg.CBox('More?', key='cb_further', enable_events=True, visible=ncs_fields, background_color=background),
          sg.CBox('', key='cb_goodeve', enable_events=True, background_color=background),
-         sg.Combo(combo_list_2, key='option_goodeve', enable_events=True),
+         sg.Combo(combo_list_2, default_value=combo_list_2[0], key='option_goodeve', enable_events=True),
          sg.Button('Edit', key='edit_secondcombo', visible=show_edit_buttons)],
 
         [sg.Text('Preview', size=(8, 1), background_color=background ),
@@ -884,13 +996,13 @@ class MainWindow(object):
          sg.Button('Go', key='send_really', disabled = disable_buttons)],
 
         [sg.Text('', size=(8, 1), visible=client_fields, background_color=background ),
-         sg.Button('CKin', key='btncli_ckmein', size=(5, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
-         sg.Button('ALERT', key='btncli_alert', size=(5, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
-         sg.Button('QRT', key='btncli_qrt', size=(5, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
-         sg.Button('Post', key='btncli_post', size=(5, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
-         sg.Button('Tks', key='btncli_tks', size=(5, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
-         sg.Button('Custom1', key='btncli_cust1', size=(5, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
-         sg.Button('Custom2', key='btncli_cust2', size=(5, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons )], 
+         sg.Button('CKin', key='btncli_ckmein', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
+         sg.Button('ALERT', key='btncli_alert', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
+         sg.Button('QRT', key='btncli_qrt', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
+         sg.Button('Post', key='btncli_post', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
+         sg.Button('Tks', key='btncli_tks', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
+         sg.Button('Custom1', key='btncli_cust1', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons ), 
+         sg.Button('Custom2', key='btncli_cust2', size=(6, 1), button_color=(btn_clr1, btn_clr2), visible=client_fields, disabled = disable_buttons )], 
         [sg.Text('', size=(8, 1), visible=edit_mode, background_color=background ),
          sg.CBox('Edit Macros', key='cb_editbtn', visible=edit_mode , enable_events=True, background_color=background),
          sg.CBox('Modified', key='cb_edited', visible=edit_mode, enable_events=True, background_color=background)],
@@ -902,6 +1014,6 @@ class MainWindow(object):
          sg.Combo(side_list, key='option_selectside', size=(21, 1), enable_events=True, visible=simulation_mode ),
          sg.CBox('Simulate', key='cb_simulate', visible=simulation_mode, default=False, background_color=background)],
     ]
-    self.window = sg.Window('JS8Net de WH6GGO (v1.0 Beta)', layout, default_element_size=(40, 1), grab_anywhere=False, disable_close=True, background_color=background)
+    self.window = sg.Window('JS8Net de WH6GGO (v1.1.0 Beta)', layout, default_element_size=(40, 1), grab_anywhere=False, disable_close=True, background_color=background)
     return (self.window)
 

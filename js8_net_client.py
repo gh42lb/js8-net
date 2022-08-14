@@ -1,5 +1,10 @@
 #!/usr/bin/env python
-import PySimpleGUI27 as sg
+
+try:
+  import PySimpleGUI as sg
+except:
+  import PySimpleGUI27 as sg
+
 import sys
 import JS8_Client
 import debug as db
@@ -14,6 +19,31 @@ import net_parser
 
 from datetime import datetime, timedelta
 from datetime import time
+
+"""
+MIT License
+
+Copyright (c) 2022 Lawrence Byng
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 
 """
 The main/high level logic for the js8 net app goes in the JS8_Net class
@@ -176,13 +206,23 @@ class JS8_Net(object):
     retval=""	  
     current_round = self.window['option_currentround'].get().strip()
     total_rounds = self.window['input_rounds'].get().strip()
-    
-    if(current_round == "ONE" and (total_rounds == "TWO" or total_rounds == "THREE" ) ):
-      self.window['option_currentround'].Update("TWO")	
-      retval = "TWO"
-    elif(current_round == "TWO" and total_rounds == "THREE" ):
-      self.window['option_currentround'].Update("THREE")	
-      retval = "THREE"
+
+    if(current_round != total_rounds ):
+      if(current_round == "ONE"):
+        self.window['option_currentround'].Update("TWO")	
+        retval = "TWO"
+      elif(current_round == "TWO"):
+        self.window['option_currentround'].Update("THREE")	
+        retval = "THREE"
+      elif(current_round == "THREE"):
+        self.window['option_currentround'].Update("FOUR")	
+        retval = "FOUR"
+      elif(current_round == "FOUR"):
+        self.window['option_currentround'].Update("FIVE")	
+        retval = "FIVE"
+      elif(current_round == "FIVE"):
+        self.window['option_currentround'].Update("SIX")	
+        retval = "SIX"
 
     return retval
  
@@ -258,6 +298,8 @@ class JS8_Net(object):
   there can only be one <TALKING> station
   """
   def incrementStatus(self, indexNext, indexTalking, indexTimeout):
+
+    self.debug.info_message("incrementing status")
 
     if(indexTalking != -1):
       """ only update the field if this is an existing roster station and not a new checkin """
@@ -430,19 +472,20 @@ class JS8_Net(object):
           if(talkingIndex != -1):
             self.debug.info_message("whoIsThis. talking index: " + str(talkingIndex) )
             lastTalkingOffset = int(self.getStationOffset(talkingIndex))
-            if(intOffset > lastTalkingOffset-10 and intOffset < lastTalkingOffset+10):
+            if(intOffset > lastTalkingOffset-3 and intOffset < lastTalkingOffset+3):
               last_call = self.getStationCallAlt(talkingIndex)
               self.debug.info_message("whoIsThis. Matched to station: " + last_call)
 
             else:
-              matchedIndex = self.getOffsetMatch(intOffset, 10)
+              matchedIndex = self.getOffsetMatch(intOffset, 3)
               lastTalkingOffset = int(self.getStationOffset(matchedIndex))
-              if(intOffset > lastTalkingOffset-10 and intOffset < lastTalkingOffset+10):
+              if(intOffset > lastTalkingOffset-3 and intOffset < lastTalkingOffset+3):
                 last_call = self.getStationCallAlt(matchedIndex)
           else:
-            matchedIndex = self.getOffsetMatch(intOffset, 10)
+            matchedIndex = self.getOffsetMatch(intOffset, 3)
+            self.debug.info_message("whoIsThis. matched index: " + str(matchedIndex) )
             lastTalkingOffset = int(self.getStationOffset(matchedIndex))
-            if(intOffset > lastTalkingOffset-10 and intOffset < lastTalkingOffset+10):
+            if(intOffset > lastTalkingOffset-3 and intOffset < lastTalkingOffset+3):
               last_call = self.getStationCallAlt(matchedIndex)
             else:
               last_call = "-"			        
@@ -487,7 +530,7 @@ class JS8_Net(object):
 
       """ process auto checkin """
       if(found == 0 and self.getAutoCheckin() == True):
-        self.processAutoCheckin(text, last_call, last_offset, last_SNR, last_BadFrm, last_TimeDelta)
+        self.processAutoCheckin(text, last_call.strip(), last_offset, last_SNR, last_BadFrm, last_TimeDelta)
 
     """ only stop the timer if the call matches what was set to start timer """
     self.stopTimer(last_call, False, True)
@@ -501,37 +544,52 @@ class JS8_Net(object):
   """
   def processAutoCheckin(self, text, last_call, last_offset, last_SNR, last_BadFrm, last_TimeDelta):
 
-    self.debug.info_message("processAutoCheckin. setting status for " + last_call + " to <HEARD>")
+    self.debug.info_message("processAutoCheckin. setting status for '" + last_call + "' to <HEARD>")
     last_status = " <HEARD> "
-          
-    last_name = self.nameFromSavedCalls(last_call)
-    if(last_name!="" and last_name != '-'):
-      self.setRoster( self.getRoster() + [last_call + ' ' + last_name + last_status + last_offset + ' ' + last_SNR + ' ' + last_BadFrm + ' ' + last_TimeDelta] )
-    else:
-      if(last_call != '' and last_call != '-'):
+    """ check to make sure the call sign does not have embedded spaces. if so discard as invalid"""
+    if(not (' ' in last_call) ):   
+      last_name = self.nameFromSavedCalls(last_call)
+      if(last_name != '' and last_name != '-'):
+        self.setRoster( self.getRoster() + [last_call + ' ' + last_name + last_status + last_offset + ' ' + last_SNR + ' ' + last_BadFrm + ' ' + last_TimeDelta] )
+      elif(last_call != '' and last_call != '-'):
         self.setRoster( self.getRoster() + [last_call + ' -' + last_status + last_offset + ' ' + last_SNR + ' ' + last_BadFrm + ' ' + last_TimeDelta] )
-
+          
   """
   callback function used by JS8_Client processing thread
   """
   def my_new_callback(self, json_string, txrcv):
 
-    self.debug.info_message("my_new_callback. Received message is: " + json_string)
+    try:
+      self.my_new_callback2(json_string, txrcv)
+    except:
+      self.debug.error_message("method: my_new_callback. " + str(sys.exc_info()[0]) + str(sys.exc_info()[1] ))
+    return
+
+    
+  def my_new_callback2(self, json_string, txrcv):
 
     line = json_string.split('\n')
     length = len(line)
+
     for x in range(length-1):
+      self.debug.info_message("my_new_callback. LOC 2 ")
+
       dict_obj = json.loads(line[x])
-      text = self.js8client.getValue(dict_obj, "value")
-      type = self.js8client.getValue(dict_obj, "type")
+      text = self.js8client.stripEndOfMessage(self.js8client.getValue(dict_obj, "value")).decode('utf-8')
+      
+      type = self.js8client.getValue(dict_obj, "type").decode('utf-8')
       last_call = None
+
+      self.debug.info_message("my_new_callback. LOC 3 ")
       
       """ test to see if there are any missing frames """
       self.js8client.areFramesMissing(self.js8client.getValue(dict_obj, "value") )
 
+      self.debug.info_message("my_new_callback. LOC 4 ")
+
       if (type == "STATION.CALLSIGN"):
         self.debug.info_message("my_new_callback. STATION.CALLSIGN")
-        self.station_call_sign = self.js8client.getValue(dict_obj, "value")
+        self.station_call_sign = self.js8client.getValue(dict_obj, "value").decode('utf-8')
 
       elif (type == "RIG.FREQ"):
         dialfreq = int(self.js8client.getParam(dict_obj, "DIAL"))
@@ -558,12 +616,12 @@ class JS8_Net(object):
       elif (type == "RX.ACTIVITY"):
         self.debug.info_message("my_new_callback. RX.ACTIVITY")
         last_call = self.processMsg(dict_obj, text)
-        missing_frames = self.js8client.areFramesMissing(text)
+        missing_frames = self.js8client.areFramesMissing(text.encode() )
         self.debug.info_message("processMsg. RX.ACTIVITY. missing frames: " + str(missing_frames) )
         if missing_frames>0:
           self.updateRosterMissingFrames(last_call, missing_frames)
           self.view.writeMsgToScreen(dict_obj, text + "MISSING FRAMES: " + str(missing_frames), self.js8client, last_call)
-        elif self.js8client.isEndOfMessage(text):
+        elif self.js8client.isEndOfMessage(text.encode()):
           self.view.writeMsgToScreen(dict_obj, text + "EOM", self.js8client, last_call)
         else:
           self.view.writeMsgToScreen(dict_obj, text, self.js8client, last_call)
@@ -636,7 +694,7 @@ class JS8_Net(object):
     if(checked == False):
       self.buildAndProcessSimulatedMessage(message, post_text)
       self.debug.info_message("sendItNow. Invoking TX.SEND_MESSAGE")
-      self.js8client.sendMsg("TX.SEND_MESSAGE", message + post_text)
+      self.js8client.sendMsg("TX.SEND_MESSAGE", message + post_text )
     return ()
 
   def buildAndProcessSimulatedMessage(self, message, post_text):
@@ -644,8 +702,9 @@ class JS8_Net(object):
     try:
       self.debug.info_message("method: buildAndProcessSimulatedMessage. message + post text: " + message + post_text)
       if(message != ""):
-        text = (message + post_text).split(self.window['input_netgroup'].get().strip())[1]
-        pre_text = self.getStationCallSign() + ': ' + self.window['input_netgroup'].get().strip()
+        text = (message + post_text).split(self.window['input_netgroup'].get().upper().strip())[1]
+        #pre_text = self.getStationCallSign().decode('utf-8') + ': ' + self.window['input_netgroup'].get().strip()
+        pre_text = self.getStationCallSign() + ': ' + self.window['input_netgroup'].get().upper().strip()
         simulatedstring = '{"params":{},"type":"RX.DIRECTED","value":"' + pre_text + text + '"}\n'
         self.debug.info_message("buildAndProcessSimulatedMessage. simulate string: " + simulatedstring)
         self.my_new_callback(self.parser.replaceFields(simulatedstring, True), cn.TX)
@@ -681,7 +740,7 @@ class JS8_Net(object):
 
   def updateRoster(self, index, call, name, status):
 
-    self.debug.info_message("updayeRoster. status: " + status)
+    self.debug.info_message("updateRoster. status: " + status)
 
     split_string = self.roster[index].split(" ")
     offset   = split_string[3]
@@ -710,7 +769,7 @@ class JS8_Net(object):
 
 
   def updateRosterStatus(self, index, status):
-    self.debug.info_message("updayeRosterStatus. status: " + status)
+    self.debug.info_message("updateRosterStatus. status: " + status)
 
     split_string = self.roster[index].split(" ")
     call     = split_string[0]
@@ -906,7 +965,7 @@ def usage():
 
 def main():
     net = None
-    debug = db.Debug(cn.DEBUG_WARNING)
+    debug = db.Debug(cn.DEBUG_INFO)
 
     """
     if nothing is specified for edition, profile string defaults to the day of the week in local time
@@ -932,7 +991,7 @@ def main():
     net_data_file   = "js8net_save_data.txt"
     js8call_address = '127.0.0.1'
     js8call_port    = 2442
-    client_read_details = False
+    client_read_details = True
     group = ""
     frequency = ""
     counter_value = 200
@@ -944,6 +1003,7 @@ def main():
     from_plan = True
     main_offset = 1000
     visuals = 'background:LightGray,main:SeaGreen1,side:LightBlue1,flash1:red,flash2:blue'
+    visuals = 'background:blue,main:turquoise1,side:DarkOliveGreen1,flash1:red2,flash2:green1'
     side_main_offset_boundary = 700
     view = js8_net_gui.MainWindow()
     js=view.readDictFromFile(net_data_file)

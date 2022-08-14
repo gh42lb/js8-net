@@ -7,6 +7,32 @@ import sys
 import select
 import constant as cn
 
+
+"""
+MIT License
+
+Copyright (c) 2022 Lawrence Byng
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
+
 """
 JS8_CALL ip / port
 """
@@ -75,9 +101,12 @@ class JS8_Client(object):
       if ready[0]:
         content = self.sock.recv(65535)
         callback = self.getCallback()
-        callback(str(content), cn.RCV)  
-        return (str(content))
-    return ("")
+        try:
+          callback(content.decode('utf-8'), cn.RCV)  
+        except:
+          sys.stdout.write("except in getMsg: " + str(sys.exc_info()[0]) + str(sys.exc_info()[1] ) + "\n")
+          return			  
+    return
 
   """
   send a message to JS8_CALL
@@ -94,6 +123,7 @@ class JS8_Client(object):
         """ remember to send the newline at the end :) """
         self.sock.send((message + '\n').encode()) 
       except:
+        sys.stdout.write("EXCEPT IN sendMsg\n")
         self.close()
 
   """
@@ -101,12 +131,14 @@ class JS8_Client(object):
   unicode encode necessary for correct functioning otherwise throws unicode exception
   """
   def isTextInMessage(self, text, message):
-    
-    newtext = text.encode('utf-8')
-    if newtext in message:
-      return (1)
-    else:
-      return (0)
+    try:
+      newtext = text.encode('utf-8')
+      if newtext in message.encode('utf-8'):
+        return (1)
+      else:
+        return (0)
+    except:    
+      sys.stdout.write("EXCEPTION\n")
 
   """
   test if message end with and EOM unicode character
@@ -119,6 +151,17 @@ class JS8_Client(object):
       sys.stdout.write("END OF MESSAGE\n")
     else:
       return (0)
+
+
+  def stripEndOfMessage(self, message):
+    retstring = ''
+    try:    
+      eom = u'♢'.encode('utf-8')
+      retstring = message.split(eom, 1)[0]
+    except:    
+      sys.stdout.write("EXCEPTION\n")
+
+    return retstring
 
   """
   test if message contains missing frame unicode character(s)
@@ -150,11 +193,14 @@ class JS8_Client(object):
         time.sleep(1)
  
         if (self.getStopThreads()):
+            sys.stdout.write("stop threads id true\n")
             self.close()
             break
     except:
+      sys.stdout.write("except in run: " + str(sys.exc_info()[0]) + str(sys.exc_info()[1] ) + "\n")
       time.sleep(5)
     finally:
+      sys.stdout.write("close in run\n")
       self.close()
 
   """

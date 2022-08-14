@@ -1,10 +1,30 @@
+MIT License
 
-JS8_net v1.0 Beta release de WH6GGO
+Copyright (c) 2022 Lawrence Byng
 
-designed and developed by Lawrence Byng, WH6GGO
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-This software is released under the MIT license
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+
+JS8_net v1.1 Beta release de WH6GGO
+
+Designed and developed by Lawrence Byng
 
 JS8 net is designed to provide a set of ehanced features for running a JS8 net.
 The design concept is both experimental and unique. 
@@ -47,83 +67,70 @@ make sure JS8Call is configured as follows
 This setting is required for the text transfers between js8call and js8net to function correctly
 
 2) File/Settings/Reporting tab
-under the API section:
-TCP Server Hostname: 127.0.0.1   Enable TCP Server API - checked
-TCP Server Port:     2442        Accept TCP Requests   - checked
-TCP Max Connections: 1
+    • under the API section:
+    • TCP Server Hostname: 127.0.0.1   Enable TCP Server API - checked
+    • TCP Server Port:     2442        Accept TCP Requests   - checked
+    • TCP Max Connections: 1 or 2
 
 3) When you are ready to transmit, adjust the mode speed in JS8 as required (normal, fast, turbo) and make sure
  the TX button at the top right is enabled
 
 
-STEP 2 installing python and the modules. 
-==========================================
-make sure python 2.7 is installed along with the following mudules...
+STEP 2 download the pre built binaries
+======================================
+note: The software has been tested in python 3.10 and 2.7 on a raspberry pi and on windows
 
-PySimpleGUI27, sys, threading, json, random, getopt, datetime, socket, time, select, calendar
+Windows
+=======
+    • download the exe file js8_net_client.exe into your chosen directory
+    • run the file: js8_net_client.exe --interface=netcontrol
+    • or: js8_net_client.exe --interface=participant --frequency='fromjs8call' --group='@MYGROUP'
+    
+Raspberyy pi linux
+==================
+
+    • download the binary 'js8_net_client' to your chosen directoy
+    • change the file to executable by running: sudo chmod 777 ./js8_net_client
+    • run the program: ./js8_net_client --interface=netcontrol
+    • or: ./js8_net_client --interface=participant --frequency='fromjs8call' --group='@MYGROUP'
+    
+running from .py files
+======================
+
+    • download the js8net python files into your chosen directory
+
+    • make sure python is installed along with the following mudules...
+
+PySimpleGUI or PySimpleGui27, sys, threading, json, random, getopt, datetime, socket, time, select, calendar
+
+please note under python 2, PySimpleGui27 may require the additional module 'typing'
+
+i.e.
+python 3: pip3 install pysimplegui
+
+or 
+
+python2: pip install pysimplegui27, pip install typing
+
+or
+
+python2: python pip -m install pysimplegui27, python pip -m install typing
+
+    • now run the application: python ./js8_net_client.py --interface=netcontrol
+
+    • or: python ./js8_net_client.py --interface=participant --frequency='fromjs8call' --group='@MYGROUP'
 
 
-STEP 3 downloading js8 net. 
-===========================
-download the js8net python files into your chosen directory
-
-set js8_net_client.py as executeable
-
-sudo chmod +x js8_net_client.py
-
-
-STEP 4 run the application
-==========================
-
-There are two main modes of operation, one as net control...
-
-python ./js8_net_client.py --interface=netcontrol --net_file=js8net_save_data.txt
-
---net_file specifies the name and location of the file to save data from js8 net
-
-
-and one as a client or participant station...
-
-python ./js8_net_client.py --interface=participant --net_file=js8net_save_data.txt --frequency='fromjs8call' --group='@MYGROUP'
-
---frequency and --group are required to participate. these can be acquired in several ways
---frequency='fromjs8call' this will use the frequency setting of jas8 call as the setting for the js8 net application
---group='@MYGROUP' this provides a manual override for the group field of the application
 
 if everything is installed correctly, js8 net will connect to js8call and display the main window
 
-
 if you wish to use a different ip or port these can be specified on the command line as follows...
 
-python ./js8_net_client.py --interface=netcontrol --js8call='127.0.0.1:2442'
+    • python ./js8_net_client.py --interface=netcontrol --js8call='127.0.0.1:2442'
 
 
-STEP 5 customization
-====================
 
-1) offsets plan
-an offsets plan can be assigned to all stations as follows...
-python ./js8_net_client.py --interface=netcontrol --offsets='1337,400,500,600,700,800,900'
-please note only participant stations using the js8 net application will be able to use this feature
-
-
-2) combo box messages
-the two drop down combos can be customized with different messages as follows...
-python ./js8_net_client.py --interface=netcontrol --combo_tks='comments,heads up,info' --combo_aloha='have a great morning,have a nice day,enjoy your day'
-
-
-3) button messages
-js8 net has a built in macro language and allows customization of the messages behind each of the main buttons
-to activate the edit feature run js8 net in edit mode
-python ./js8_net_client.py --interface=netcontrol --edit
-
-
-4) screen colors
-colors can be changed as follows...
-python ./js8_net_client.py --interface=netcontrol --visual='background:yellow,main:pink,side:blue,flash1:green,flash2:cyan'
-the default colors are set equivalent to...
-python ./js8_net_client.py --interface=netcontrol --visual='background:LightGray,main:SeaGreen1,side:LightBlue1,flash1:red,flash2:blue'
-
+for more information please refer to user_guide.pdf
 
 
 
