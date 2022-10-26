@@ -1,28 +1,6 @@
-MIT License
+## Overview
 
-Copyright (c) 2022 Lawrence Byng
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-
-
-JS8_net v1.1 Beta release de WH6GGO
+JS8_Net v1.1 Beta release de WH6GGO
 
 Designed and developed by Lawrence Byng
 
@@ -40,27 +18,26 @@ All stations on the net that use js8 net application will have the enhanced func
 This functionality is similar to what might be provided by an internet based application, however this 
 is achieved by using JS8 HF text mode communication only and without the use of any internet connections. 
 
-A quick overview of some of the main features of JS8Net are:
+#### Features
+* Roster to display participating station call signs, operator name, net status and offset
+* Point and click style of net operation
+* Can be run as net control view or as participant station view
+* Convenient notepad area to pre-type various communications prior to the net
+* Auto save feature 
+* Built in macro language allowing construction of wide variety of point and click messages with macros that are hooked into the various tracking aspects of JS8Net
+* customization feature allowing customization of all point and click message
+* state machine and text mode parser that allows participant stations to view up to date net information as if connected via internet
+* no internet connection required. Uses only text mode communication allowing stations
+* Use of application is optional. Any station using at a minimum JS8 mode only are still able to participate in the net.
+* tracking of SNR, bad frames and time delta for each station. 
+* Ability to distribute an offsets list to other stations running JS8Net
 
-    • Roster to display participating station call signs, operator name, net status and offset
-    • Point and click style of net operation
-    • Can be run as net control view or as participant station view
-    • Convenient notepad area to pre-type various communications prior to the net
-    • Auto save feature 
-    • Built in macro language allowing construction of wide variety of point and click messages with macros that are hooked into the various tracking aspects of JS8Net
-    • customization feature allowing customization of all point and click message
-    • state machine and text mode parser that allows participant stations to view up to date net information as if connected via internet
-    • no internet connection required. Uses only text mode communication allowing stations
-    • Use of application is optional. Any station using at a minimum JS8 mode only are still able to participate in the net.
-    • tracking of SNR, bad frames and time delta for each station. 
-    • Ability to distribute an offsets list to other stations running JS8Net
+
+## Quick start guide
 
 
-Quick start guide
-=================
+### JS8call configuration:
 
-STEP 1 JS8call configuration:
-============================
 make sure JS8Call is configured as follows
 
 1) Mode menu/Enable Auto Reply - checked
@@ -76,26 +53,24 @@ This setting is required for the text transfers between js8call and js8net to fu
  the TX button at the top right is enabled
 
 
-STEP 2 download the pre built binaries
-======================================
-note: The software has been tested in python 3.10 and 2.7 on a raspberry pi and on windows
+### Downloading pre-built binaries
 
-Windows
-=======
+note: The software has been tested in python 3.10 and 2.7 on raspberry pi and windows platforms
+
+#### Windows
+
     • download the exe file js8_net_client.exe into your chosen directory
     • run the file: js8_net_client.exe --interface=netcontrol
     • or: js8_net_client.exe --interface=participant --frequency='fromjs8call' --group='@MYGROUP'
     
-Raspberyy pi linux
-==================
+#### Raspberry pi
 
     • download the binary 'js8_net_client' to your chosen directoy
     • change the file to executable by running: sudo chmod 777 ./js8_net_client
     • run the program: ./js8_net_client --interface=netcontrol
     • or: ./js8_net_client --interface=participant --frequency='fromjs8call' --group='@MYGROUP'
     
-running from .py files
-======================
+### Download and run from .py files
 
     • download the js8net python files into your chosen directory
 
@@ -137,3 +112,31 @@ for more information please refer to user_guide.pdf
 enjoy :)
 
 73 de WH6GGO
+
+
+
+## Copyright/License
+
+MIT License
+
+Copyright (c) 2022 Lawrence Byng
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
