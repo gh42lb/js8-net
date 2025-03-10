@@ -55,20 +55,13 @@ This setting is required for the text transfers between js8call and js8net to fu
 
 ### Downloading pre-built binaries
 
-note: The software has been tested in python 3.10 and 2.7 on raspberry pi and windows platforms
+note: The software is incorporated in the HRRM suite. Tested on raspberry pi, ubuntu/linux mint and windows platforms
 
 #### Windows
 
-    • download the exe file js8_net_client.exe into your chosen directory
-    • run the file: js8_net_client.exe --interface=netcontrol
-    • or: js8_net_client.exe --interface=participant --frequency='fromjs8call' --group='@MYGROUP'
-    
-#### Raspberry pi
-
-    • download the binary 'js8_net_client' to your chosen directoy
-    • change the file to executable by running: sudo chmod 777 ./js8_net_client
-    • run the program: ./js8_net_client --interface=netcontrol
-    • or: ./js8_net_client --interface=participant --frequency='fromjs8call' --group='@MYGROUP'
+    • download HRRM_setup.exe installer into your chosen directory
+    • run the installer
+   
     
 ### Download and run from .py files
 
@@ -76,20 +69,11 @@ note: The software has been tested in python 3.10 and 2.7 on raspberry pi and wi
 
     • make sure python is installed along with the following mudules...
 
-PySimpleGUI or PySimpleGui27, sys, threading, json, random, getopt, datetime, socket, time, select, calendar
+PySimpleGUI or FreeSimpleGui27, sys, threading, json, random, getopt, datetime, socket, time, select, calendar
 
-please note under python 2, PySimpleGui27 may require the additional module 'typing'
 
 i.e.
-python 3: pip3 install pysimplegui
-
-or 
-
-python2: pip install pysimplegui27, pip install typing
-
-or
-
-python2: python pip -m install pysimplegui27, python pip -m install typing
+python 3: pip3 install freesimplegui
 
     • now run the application: python ./js8_net_client.py --interface=netcontrol
 
