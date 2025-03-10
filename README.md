@@ -69,7 +69,7 @@ note: The software is incorporated in the HRRM suite. Tested on raspberry pi, ub
 
     • make sure python is installed along with the following mudules...
 
-PySimpleGUI or FreeSimpleGui27, sys, threading, json, random, getopt, datetime, socket, time, select, calendar
+FreeSimpleGui, sys, threading, json, random, getopt, datetime, socket, time, select, calendar
 
 
 i.e.
