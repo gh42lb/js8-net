@@ -56,11 +56,6 @@ This setting is required for the text transfers between js8call and js8net to fu
 ### Downloading pre-built binaries
 
 note: The software is incorporated in the HRRM suite. Tested on raspberry pi, ubuntu/linux mint and windows platforms
-
-#### Windows
-
-    • download HRRM_setup.exe installer into your chosen directory
-    • run the installer
    
     
 ### Download and run from .py files
