@@ -52,11 +52,6 @@ This setting is required for the text transfers between js8call and js8net to fu
 3) When you are ready to transmit, adjust the mode speed in JS8 as required (normal, fast, turbo) and make sure
  the TX button at the top right is enabled
 
-
-### Downloading pre-built binaries
-
-note: The software is incorporated in the HRRM suite. Tested on raspberry pi, ubuntu/linux mint and windows platforms
-   
     
 ### Download and run from .py files
 
